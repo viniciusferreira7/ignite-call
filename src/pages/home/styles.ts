@@ -17,7 +17,6 @@ export const Hero = styled('div', {
   [`${Heading}`]: {
     '@media(max-width: 600px)': {
       fontSize: '$5xl',
-      color: 'red',
     },
   },
 
