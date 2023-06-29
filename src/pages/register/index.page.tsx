@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { api } from '../../lib/axios'
+import { AxiosError } from 'axios'
 
 const registerFormSchema = z.object({
   username: z
@@ -40,8 +41,14 @@ export default function Register() {
         name: data.name,
         username: data.username,
       })
-    } catch (error) {
-      setError('root', { message: 'O usuário já existe' })
+    } catch (err) {
+      if (err instanceof AxiosError && err.response?.data?.message) {
+        const { message } = err.response?.data
+
+        setError('root', { message })
+        return
+      }
+      console.log(err)
     }
   }
 
@@ -86,7 +93,11 @@ export default function Register() {
           Próximo passo
           <ArrowRight />
         </Button>
-        {errors.root?.message}
+        {errors.root && (
+          <Text size="sm" css={{ color: 'red', textTransform: 'Capitalize' }}>
+            {errors.root?.message}
+          </Text>
+        )}
       </Form>
     </Container>
   )
