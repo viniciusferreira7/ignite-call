@@ -25,7 +25,7 @@ export function buildNextAuth(
             id: profile.sub,
             name: profile.name,
             email: profile.email,
-            username: null,
+            username: '',
             avatar_url: profile.picture,
           }
         },
