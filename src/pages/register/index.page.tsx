@@ -5,8 +5,9 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { api } from '../../lib/axios'
+import { AxiosError } from 'axios'
 
 const registerFormSchema = z.object({
   username: z
@@ -24,6 +25,7 @@ const registerFormSchema = z.object({
 type RegisterFormSchemaData = z.infer<typeof registerFormSchema>
 
 export default function Register() {
+  const [registerError, setRegisterError] = useState('')
   const {
     register,
     setValue,
@@ -42,6 +44,12 @@ export default function Register() {
         name,
       })
     } catch (err) {
+      if (err instanceof AxiosError && err?.response?.data?.message) {
+        setRegisterError(err?.response?.data?.message)
+
+        return
+      }
+
       console.error(err)
     }
   }
@@ -87,6 +95,7 @@ export default function Register() {
             <FormError size="sm">{errors.name.message}</FormError>
           )}
         </label>
+        {registerError && <FormError size="sm">{registerError}</FormError>}
         <Button type="submit" disabled={isSubmitting}>
           Próximo passo
           <ArrowRight />
