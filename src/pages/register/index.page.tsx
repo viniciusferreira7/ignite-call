@@ -1,13 +1,13 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Heading, MultiStep, Text, TextInput } from '@ignite-ui/react'
-import { Container, Form, FormError, Header } from './styles'
+import { AxiosError } from 'axios'
+import { useRouter } from 'next/router'
 import { ArrowRight } from 'phosphor-react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
 import { api } from '../../lib/axios'
-import { AxiosError } from 'axios'
+import { Container, Form, FormError, Header } from './styles'
 
 const registerFormSchema = z.object({
   username: z
@@ -35,6 +35,8 @@ export default function Register() {
     resolver: zodResolver(registerFormSchema),
   })
 
+  const router = useRouter()
+
   async function handleRegister(data: RegisterFormSchemaData) {
     const { username, name } = data
 
@@ -43,6 +45,8 @@ export default function Register() {
         username,
         name,
       })
+
+      await router.push('/register/connect-calendar')
     } catch (err) {
       if (err instanceof AxiosError && err?.response?.data?.message) {
         setRegisterError(err?.response?.data?.message)
@@ -53,8 +57,6 @@ export default function Register() {
       console.error(err)
     }
   }
-
-  const router = useRouter()
 
   const queryParam = router.query.username
 
