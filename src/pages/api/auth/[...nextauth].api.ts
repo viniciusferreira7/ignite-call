@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import { z } from 'zod'
+import { PrismaAdapter } from '../../../lib/auth/prisma-adapter'
 
 const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string(),
@@ -10,6 +11,8 @@ const envSchema = z.object({
 const _env = envSchema.parse(process.env)
 
 export const authOptions = {
+  adapter: PrismaAdapter(),
+
   providers: [
     GoogleProvider({
       clientId: _env.GOOGLE_CLIENT_ID,
