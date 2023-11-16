@@ -20,12 +20,13 @@ import {
   IntervalDay,
   IntervalInputs,
 } from './styles'
+import { convertTimeStringToMinutes } from '../../../utils/convert-time-string-to-minutes'
 
 const timeIntervalsSchema = z.object({
   intervals: z
     .array(
       z.object({
-        weekday: z.number().min(0).max(6),
+        weekDay: z.number().min(0).max(6),
         enabled: z.boolean(),
         startTime: z.string(),
         endTime: z.string(),
@@ -35,10 +36,32 @@ const timeIntervalsSchema = z.object({
     .transform((intervals) => intervals.filter((interval) => interval.enabled))
     .refine((intervals) => intervals.length > 0, {
       message: 'Você precisa selecionar pelo menos um dia da semana!',
-    }),
+    })
+    .transform((intervals) => {
+      return intervals.map((interval) => {
+        return {
+          weekDay: interval.weekDay,
+          startTimeAndMinutes: convertTimeStringToMinutes(interval.startTime),
+          endTimeAndMinutes: convertTimeStringToMinutes(interval.endTime),
+        }
+      })
+    })
+    .refine(
+      (intervals) => {
+        return intervals.every(
+          (interval) =>
+            interval.endTimeAndMinutes - 60 >= interval.startTimeAndMinutes,
+        )
+      },
+      {
+        message:
+          'O horário de término deve ser pelo menos 1h distante do início.',
+      },
+    ),
 })
 
-type TimeIntervalsFormData = z.infer<typeof timeIntervalsSchema>
+type TimeIntervalsFormInput = z.input<typeof timeIntervalsSchema>
+type TimeIntervalsFormOutput = z.output<typeof timeIntervalsSchema>
 
 export default function TimeIntervals() {
   const {
@@ -47,23 +70,23 @@ export default function TimeIntervals() {
     watch,
     control,
     formState: { isSubmitting, errors },
-  } = useForm<TimeIntervalsFormData>({
+  } = useForm<TimeIntervalsFormInput, any, TimeIntervalsFormOutput>({
     resolver: zodResolver(timeIntervalsSchema),
     defaultValues: {
       intervals: [
-        { weekday: 0, enabled: false, startTime: '8:00', endTime: '10:00' },
+        { weekDay: 0, enabled: false, startTime: '08:00', endTime: '10:00' },
 
-        { weekday: 1, enabled: true, startTime: '8:00', endTime: '10:00' },
+        { weekDay: 1, enabled: true, startTime: '08:00', endTime: '10:00' },
 
-        { weekday: 2, enabled: true, startTime: '8:00', endTime: '10:00' },
+        { weekDay: 2, enabled: true, startTime: '08:00', endTime: '10:00' },
 
-        { weekday: 3, enabled: true, startTime: '8:00', endTime: '10:00' },
+        { weekDay: 3, enabled: true, startTime: '08:00', endTime: '10:00' },
 
-        { weekday: 4, enabled: true, startTime: '8:00', endTime: '10:00' },
+        { weekDay: 4, enabled: true, startTime: '08:00', endTime: '10:00' },
 
-        { weekday: 5, enabled: true, startTime: '8:00', endTime: '10:00' },
+        { weekDay: 5, enabled: true, startTime: '08:00', endTime: '10:00' },
 
-        { weekday: 6, enabled: false, startTime: '8:00', endTime: '10:00' },
+        { weekDay: 6, enabled: false, startTime: '08:00', endTime: '10:00' },
       ],
     },
   })
@@ -77,7 +100,7 @@ export default function TimeIntervals() {
 
   const intervals = watch('intervals')
 
-  async function handleSetTimeIntervals(data: TimeIntervalsFormData) {
+  async function handleSetTimeIntervals(data: TimeIntervalsFormOutput) {
     console.log(data)
   }
 
@@ -108,7 +131,7 @@ export default function TimeIntervals() {
                     />
                   )}
                 />
-                <Text>{weekDays[field.weekday]}</Text>
+                <Text>{weekDays[field.weekDay]}</Text>
               </IntervalDay>
               <IntervalInputs>
                 <TextInput
