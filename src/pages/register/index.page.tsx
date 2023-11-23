@@ -37,6 +37,14 @@ export default function Register() {
 
   const router = useRouter()
 
+  const queryParam = router.query.username
+
+  useEffect(() => {
+    if (queryParam) {
+      setValue('username', String(queryParam))
+    }
+  }, [queryParam, setValue])
+
   async function handleRegister(data: RegisterFormSchemaData) {
     const { username, name } = data
 
@@ -53,18 +61,9 @@ export default function Register() {
 
         return
       }
-
       console.error(err)
     }
   }
-
-  const queryParam = router.query.username
-
-  useEffect(() => {
-    if (queryParam) {
-      setValue('username', String(queryParam))
-    }
-  }, [queryParam, setValue])
 
   return (
     <Container>
