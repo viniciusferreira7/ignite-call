@@ -11,6 +11,16 @@ import { getWeekDays } from '../../utils/get-week-days'
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 
+interface CalendarWeek {
+  week: number
+  days: Array<{
+    data: dayjs.Dayjs
+    disabled: boolean
+  }>
+}
+
+type CalendarWeeks = CalendarWeek[]
+
 export function Calendar() {
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs().set('date', 1)
@@ -50,7 +60,48 @@ export function Calendar() {
       })
       .reverse()
 
-    return [...previousMonthFillDay, ...daysInMonthArray]
+    const lastDayInCurrentMonth = currentDate.set(
+      'date',
+      currentDate.daysInMonth(),
+    )
+
+    const lastWeekDay = lastDayInCurrentMonth.get('day')
+
+    const nextMonthFillDay = Array.from({
+      length: 7 - (lastWeekDay + 1),
+    }).map((_, i) => {
+      return lastDayInCurrentMonth.add(i + 1, 'day')
+    })
+
+    const calendarDays = [
+      ...previousMonthFillDay.map((data) => {
+        return { data, disabled: true }
+      }),
+      ...daysInMonthArray.map((data) => {
+        return { data, disabled: false }
+      }),
+      ...nextMonthFillDay.map((data) => {
+        return { data, disabled: true }
+      }),
+    ]
+
+    const calendarWeeks = calendarDays.reduce<CalendarWeeks>(
+      (weeks, _, i, original) => {
+        const isNewWeek = i % 7 === 0
+
+        if (isNewWeek) {
+          weeks.push({
+            week: i / 7 + 1,
+            days: original.slice(i, i + 7),
+          })
+        }
+
+        return weeks
+      },
+      [],
+    )
+
+    return calendarWeeks
   }, [currentDate])
 
   console.log(calendarWeeks)
