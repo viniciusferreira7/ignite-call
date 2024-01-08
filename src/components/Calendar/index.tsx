@@ -14,14 +14,19 @@ import { useMemo, useState } from 'react'
 interface CalendarWeek {
   week: number
   days: Array<{
-    data: dayjs.Dayjs
+    date: dayjs.Dayjs
     disabled: boolean
   }>
 }
 
 type CalendarWeeks = CalendarWeek[]
 
-export function Calendar() {
+interface CalendarProps {
+  selectDate: Date | null
+  onDateSelect: (date: Date) => void
+}
+
+export function Calendar({ selectDate, onDateSelect }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs().set('date', 1)
   })
@@ -74,14 +79,14 @@ export function Calendar() {
     })
 
     const calendarDays = [
-      ...previousMonthFillDay.map((data) => {
-        return { data, disabled: true }
+      ...previousMonthFillDay.map((date) => {
+        return { date, disabled: true }
       }),
-      ...daysInMonthArray.map((data) => {
-        return { data, disabled: false }
+      ...daysInMonthArray.map((date) => {
+        return { date, disabled: date.endOf('day').isBefore(new Date()) }
       }),
-      ...nextMonthFillDay.map((data) => {
-        return { data, disabled: true }
+      ...nextMonthFillDay.map((date) => {
+        return { date, disabled: true }
       }),
     ]
 
@@ -132,10 +137,13 @@ export function Calendar() {
         <tbody>
           {calendarWeeks.map((weekDay) => (
             <tr key={weekDay.week}>
-              {weekDay.days.map((day) => (
-                <td key={day.data.get('date')}>
-                  <CalendarDay disabled={day.disabled}>
-                    {day.data.get('date')}
+              {weekDay.days.map(({ date, disabled }) => (
+                <td key={date.get('date')}>
+                  <CalendarDay
+                    onClick={() => onDateSelect(date.toDate())}
+                    disabled={disabled}
+                  >
+                    {date.get('date')}
                   </CalendarDay>
                 </td>
               ))}
