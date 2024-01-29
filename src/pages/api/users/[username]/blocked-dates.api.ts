@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '../../../../lib/prisma'
 import dayjs from 'dayjs'
+import { count } from 'console'
 
 export default async function handler(
   req: NextApiRequest,
@@ -46,14 +47,30 @@ export default async function handler(
     )
   })
 
-  const blockedDatesRaw = await prisma.$queryRaw`
-    SELECT * 
-    FROM schedulings S
+  const blockedDatesRaw: Array<{ day_of_month: string }> =
+    await prisma.$queryRaw`
+   SELECT
+      EXTRACT(DAY FROM S.date) AS day_of_month,
+      COUNT(S.date) AS number_of_schedulings,
+      ((UTI.time_end_in_minutes - UTI.time_start_in_minutes) / 60) AS time_available
+    FROM 
+      schedulings S
+    
+      LEFT JOIN user_time_intervals UTI
+      ON (UTI.week_day = EXTRACT(ISODOW FROM S.date) AND UTI.week_day <> 0) OR (UTI.week_day = 0 AND EXTRACT(ISODOW FROM S.date) = 7)
 
-    WHERE S.user_id = ${user.id}
+
+    WHERE 
+      S.user_id = ${user.id}
       AND TO_CHAR(S.date, 'YYYY-MM') = ${`${year}-${month}`}
+    GROUP BY 
+      EXTRACT(DAY FROM S.date),
+      ((UTI.time_end_in_minutes - UTI.time_start_in_minutes) / 60)
 
+    HAVING COUNT(S.date) >= ((UTI.time_end_in_minutes - UTI.time_start_in_minutes) / 60) 
   `
 
-  return res.status(200).json({ blockedWeekDays, blockedDatesRaw })
+  const blockedDates = blockedDatesRaw.map((item) => Number(item.day_of_month))
+
+  return res.status(200).json({ blockedWeekDays, blockedDates })
 }
