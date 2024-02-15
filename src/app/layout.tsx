@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br" className={inter.className}>
-      <body className="bg-gray-900 text-gray-100 antialiased">{children}</body>
+      <body className="bg-gray-950 text-gray-100 antialiased">{children}</body>
     </html>
   )
 }

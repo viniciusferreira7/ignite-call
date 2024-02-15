@@ -18,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      gridTemplateColumns: {
+        'username-form': '1fr auto',
+      },
       maxWidth: {
         home: 'calc(100vw - (100vw - 1120px) / 2)',
       },
