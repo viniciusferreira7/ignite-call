@@ -13,7 +13,7 @@ const InputRoot = React.forwardRef<HTMLElement, InputRootProps>(
     return (
       <Comp
         className={cn(
-          'flex rounded-md border-2 border-sky-800 bg-gray-800 p-2 duration-300 focus-within:border-sky-600',
+          'flex rounded-md border-2 border-sky-800 bg-gray-800 p-2 duration-150 focus-within:border-sky-400',
           className,
         )}
         {...props}
@@ -31,7 +31,7 @@ InputRoot.displayName = 'InputRoot'
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
+const Control = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (
       <input
@@ -43,6 +43,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     )
   },
 )
-Input.displayName = 'Input'
 
-export { Input, InputRoot }
+Control.displayName = 'Control'
+
+export { Control, InputRoot }
