@@ -51,7 +51,7 @@ export function ClaimUsernameForm() {
 
         <Button
           variant="secondary"
-          size="heightAuto"
+          size="h-auto"
           type="submit"
           className="w-full rounded-lg px-2 py-3 lg:w-auto"
         >
