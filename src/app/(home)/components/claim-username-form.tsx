@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Control, HelpText, InputRoot } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconArrowRight } from '@tabler/icons-react'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -20,6 +21,8 @@ const claimUsernameFormSchema = z.object({
 type ClaimUsernameFormData = z.infer<typeof claimUsernameFormSchema>
 
 export function ClaimUsernameForm() {
+  const router = useRouter()
+
   const {
     register,
     handleSubmit,
@@ -28,8 +31,10 @@ export function ClaimUsernameForm() {
     resolver: zodResolver(claimUsernameFormSchema),
   })
 
-  async function handleClaimUsername(data: ClaimUsernameFormData) {
-    console.log(data)
+  function handleClaimUsername(data: ClaimUsernameFormData) {
+    const { username } = data
+
+    router.push(`/register?username=${username}`)
   }
 
   return (
@@ -58,7 +63,7 @@ export function ClaimUsernameForm() {
           Reserva usuário <IconArrowRight size={18} stroke={2} />
         </Button>
       </form>
-      <HelpText error={!!errors.username?.message}>
+      <HelpText error={!!errors.username}>
         {errors.username ? errors.username.message : 'Digite o nome do usuário'}
       </HelpText>
     </>
