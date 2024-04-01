@@ -36,7 +36,7 @@ const Control = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <input
         type={type}
-        className={cn('bg-transparent outline-none', className)}
+        className={cn('w-full bg-transparent outline-none', className)}
         ref={ref}
         {...props}
       />
@@ -46,4 +46,26 @@ const Control = React.forwardRef<HTMLInputElement, InputProps>(
 
 Control.displayName = 'Control'
 
-export { Control, InputRoot }
+interface HelpTextProps extends React.HTMLAttributes<HTMLParagraphElement> {
+  error?: boolean
+}
+
+const HelpText = React.forwardRef<HTMLParagraphElement, HelpTextProps>(
+  ({ className, error, ...props }, ref) => {
+    return (
+      <p
+        ref={ref}
+        className={cn(
+          'mt-2 text-xs text-gray-500',
+          className,
+          error && 'text-red-500',
+        )}
+        {...props}
+      />
+    )
+  },
+)
+
+HelpText.displayName = 'HelpText'
+
+export { InputRoot, Control, HelpText }

@@ -3,7 +3,7 @@ import { ClaimUsernameForm } from './components/claim-username-form'
 
 export default function Home() {
   return (
-    <div className="ml-auto flex h-screen max-w-home flex-col items-center justify-center gap-10 px-4 md:flex-row md:gap-20 lg:px-0">
+    <div className="ml-auto flex h-screen max-w-home flex-col items-center justify-center gap-10 px-4 md:flex-row md:gap-20 lg:px-4">
       <div className="max-w-[30rem] space-y-2 py-10">
         <h2 className="text-3xl font-extrabold md:text-6xl">
           Agendamento descomplicado
@@ -14,7 +14,7 @@ export default function Home() {
         </p>
         <ClaimUsernameForm />
       </div>
-      <div className="">
+      <div>
         <Image
           src="/assets/calendar-hero.png"
           alt="Calendário simbolizando aplicação em funcionamento"

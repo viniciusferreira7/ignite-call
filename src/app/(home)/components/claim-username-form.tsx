@@ -1,20 +1,30 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Control, InputRoot } from '@/components/ui/input'
+import { Control, HelpText, InputRoot } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconArrowRight } from '@tabler/icons-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 const claimUsernameFormSchema = z.object({
-  username: z.string(),
+  username: z
+    .string()
+    .min(3, { message: 'O usuário precisar dever pelo menos 3 letras.' })
+    .regex(/^([a-z\\-]+)$/i, {
+      message: 'O usuário pode ter apenas letras e hifens.',
+    })
+    .transform((username) => username.toLowerCase()),
 })
 
 type ClaimUsernameFormData = z.infer<typeof claimUsernameFormSchema>
 
 export function ClaimUsernameForm() {
-  const { register, handleSubmit } = useForm<ClaimUsernameFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ClaimUsernameFormData>({
     resolver: zodResolver(claimUsernameFormSchema),
   })
 
@@ -23,25 +33,34 @@ export function ClaimUsernameForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(handleClaimUsername)}
-      className="flex flex-wrap justify-center gap-1 gap-y-2 rounded bg-gray-800 p-4"
-    >
-      <InputRoot prefix="ignite.com/" className="w-full rounded-lg lg:max-w-72">
-        <Control
-          placeholder="seu-usuario"
-          className="placeholder:text-gray-500"
-          {...register('username')}
-        />
-      </InputRoot>
-      <Button
-        variant="secondary"
-        size="heightAuto"
-        type="submit"
-        className="w-full rounded-lg p-2 lg:w-auto"
+    <>
+      <form
+        onSubmit={handleSubmit(handleClaimUsername)}
+        className="flex flex-wrap items-start justify-center gap-1 gap-y-2 rounded bg-gray-800 p-4"
       >
-        Reserva usuário <IconArrowRight size={18} stroke={2} />
-      </Button>
-    </form>
+        <InputRoot
+          prefix="ignite.com/"
+          className="w-full rounded-lg lg:max-w-72"
+        >
+          <Control
+            placeholder="seu-usuario"
+            className="placeholder:text-gray-500"
+            {...register('username')}
+          />
+        </InputRoot>
+
+        <Button
+          variant="secondary"
+          size="heightAuto"
+          type="submit"
+          className="w-full rounded-lg px-2 py-3 lg:w-auto"
+        >
+          Reserva usuário <IconArrowRight size={18} stroke={2} />
+        </Button>
+      </form>
+      <HelpText error={!!errors.username?.message}>
+        {errors.username ? errors.username.message : 'Digite o nome do usuário'}
+      </HelpText>
+    </>
   )
 }
