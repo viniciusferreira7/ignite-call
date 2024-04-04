@@ -39,7 +39,9 @@ export function RegisterForm() {
     },
   })
 
-  function handleRegister(data: RegisterFormData) {}
+  function handleRegister(data: RegisterFormData) {
+    console.log(data)
+  }
 
   return (
     <form
