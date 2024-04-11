@@ -1,11 +1,12 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { InputRoot, Control, HelpText } from '@/components/ui/input'
+import { Control, HelpText, InputRoot } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { api } from '@/lib/axios'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconArrowRight } from '@tabler/icons-react'
+import { AxiosError } from 'axios'
 import { useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -33,6 +34,7 @@ export function RegisterForm() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setError,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -44,7 +46,11 @@ export function RegisterForm() {
     try {
       await api.post('/users', { name: data.name, username: data.username })
     } catch (err) {
-      console.log(err)
+      if (err instanceof AxiosError && err?.response?.data?.message) {
+        setError('username', { message: err?.response?.data?.message })
+        return
+      }
+      console.error(err)
     }
   }
 
