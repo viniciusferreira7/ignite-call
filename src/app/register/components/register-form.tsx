@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { InputRoot, Control, HelpText } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { api } from '@/lib/axios'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconArrowRight } from '@tabler/icons-react'
 import { useSearchParams } from 'next/navigation'
@@ -39,8 +40,12 @@ export function RegisterForm() {
     },
   })
 
-  function handleRegister(data: RegisterFormData) {
-    console.log(data)
+  async function handleRegister(data: RegisterFormData) {
+    try {
+      await api.post('/users', { name: data.name, username: data.username })
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   return (
