@@ -7,7 +7,7 @@ import { api } from '@/lib/axios'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconArrowRight } from '@tabler/icons-react'
 import { AxiosError } from 'axios'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -28,6 +28,7 @@ type RegisterFormData = z.infer<typeof registerFormSchema>
 
 export function RegisterForm() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const username = searchParams.get('username') ?? ''
 
   const {
@@ -45,6 +46,7 @@ export function RegisterForm() {
   async function handleRegister(data: RegisterFormData) {
     try {
       await api.post('/users', { name: data.name, username: data.username })
+      router.push('/register/connect-calendar')
     } catch (err) {
       if (err instanceof AxiosError && err?.response?.data?.message) {
         setError('username', { message: err?.response?.data?.message })
