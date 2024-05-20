@@ -18,18 +18,16 @@ export default function PrismaAdapter(): Adapter {
         },
         data: {
           name: user.name,
-          email: user.name,
-          avatar_url: user.name,
+          email: user.email,
+          avatar_url: user.avatar_url,
         },
       })
-
-      cookie.delete('ignitecall:userId')
 
       return {
         id: prismaUser.id,
         name: prismaUser.name,
         username: prismaUser.username,
-        avatar_url: prismaUser.avatar_url ?? '',
+        avatar_url: prismaUser.avatar_url ?? 'teste',
         email: prismaUser.email ?? '',
         emailVerified: null,
       }

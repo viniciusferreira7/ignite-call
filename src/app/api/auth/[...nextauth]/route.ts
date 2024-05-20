@@ -37,6 +37,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         return true
       },
+      async session({ session, user }) {
+        return {
+          ...session,
+          user: {
+            name: user.name,
+            email: user.email,
+            avatar_url: user.avatar_url,
+          },
+        }
+      },
     },
   })
 }
