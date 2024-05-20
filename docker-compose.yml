@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   ignite-call-next-14: 
     container_name: ignite-call-next-14

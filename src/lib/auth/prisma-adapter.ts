@@ -1,40 +1,78 @@
-import { Adapter, AdapterAccount } from 'next-auth/adapters'
+import { Adapter } from 'next-auth/adapters'
+import { cookies } from 'next/headers'
 import { prisma } from '../prisma'
 
 export default function PrismaAdapter(): Adapter {
   return {
-    async createUser(user) { },
+    async createUser(user) {
+      const cookie = cookies()
+      const userIdInCookies = cookie.get('ignitecall:userId')
+
+      if (!userIdInCookies) {
+        throw new Error('User ID not found in cookies.')
+      }
+
+      const prismaUser = await prisma.user.update({
+        where: {
+          id: userIdInCookies.value,
+        },
+        data: {
+          name: user.name,
+          email: user.name,
+          avatar_url: user.name,
+        },
+      })
+
+      cookie.delete('ignitecall:userId')
+
+      return {
+        id: prismaUser.id,
+        name: prismaUser.name,
+        username: prismaUser.username,
+        avatar_url: prismaUser.avatar_url ?? '',
+        email: prismaUser.email ?? '',
+        emailVerified: null,
+      }
+    },
 
     async getUser(id) {
-      const user = await prisma.user.findUniqueOrThrow({
+      const user = await prisma.user.findUnique({
         where: {
           id,
         },
       })
 
+      if (!user) {
+        return null
+      }
+
       return {
-        id: user?.id ?? '',
-        name: user?.name ?? '',
-        username: user?.username ?? '',
-        avatar_url: user?.avatar_url ?? '',
-        email: user?.email ?? '',
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        avatar_url: user.avatar_url ?? '',
+        email: user.email ?? '',
         emailVerified: null,
       }
     },
 
     async getUserByEmail(email) {
-      const user = await prisma.user.findUniqueOrThrow({
+      const user = await prisma.user.findUnique({
         where: {
           email,
         },
       })
 
+      if (!user) {
+        return null
+      }
+
       return {
-        id: user?.id ?? '',
-        name: user?.name ?? '',
-        username: user?.username ?? '',
-        avatar_url: user?.avatar_url ?? '',
-        email: user?.email ?? '',
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        avatar_url: user.avatar_url ?? '',
+        email: user.email ?? '',
         emailVerified: null,
       }
     },
@@ -52,12 +90,16 @@ export default function PrismaAdapter(): Adapter {
         },
       })
 
+      if (!account) {
+        return null
+      }
+
       return {
-        id: account?.user?.id ?? '',
-        name: account?.user?.name ?? '',
-        username: account?.user?.username ?? '',
-        avatar_url: account?.user?.avatar_url ?? '',
-        email: account?.user?.email ?? '',
+        id: account.user.id,
+        name: account.user.name,
+        username: account.user.username,
+        avatar_url: account.user.avatar_url ?? '',
+        email: account.user.email ?? '',
         emailVerified: null,
       }
     },
@@ -75,11 +117,11 @@ export default function PrismaAdapter(): Adapter {
       })
 
       return {
-        id: prismaUser?.id ?? '',
-        name: prismaUser?.name ?? '',
-        username: prismaUser?.username ?? '',
-        avatar_url: prismaUser?.avatar_url ?? '',
-        email: prismaUser?.email ?? '',
+        id: prismaUser.id,
+        name: prismaUser.name,
+        username: prismaUser.username,
+        avatar_url: prismaUser.avatar_url ?? '',
+        email: prismaUser.email ?? '',
         emailVerified: null,
       }
     },
@@ -119,7 +161,7 @@ export default function PrismaAdapter(): Adapter {
     },
 
     async getSessionAndUser(sessionToken) {
-      const { user, ...session } = await prisma.session.findFirstOrThrow({
+      const prismaSession = await prisma.session.findUnique({
         where: {
           session_token: sessionToken,
         },
@@ -128,6 +170,12 @@ export default function PrismaAdapter(): Adapter {
         },
       })
 
+      if (!prismaSession) {
+        return null
+      }
+
+      const { user, ...session } = prismaSession
+
       return {
         session: {
           userId: session.user_id,
@@ -135,11 +183,11 @@ export default function PrismaAdapter(): Adapter {
           sessionToken: session.session_token,
         },
         user: {
-          id: user?.id ?? '',
-          name: user?.name ?? '',
-          username: user?.username ?? '',
-          avatar_url: user?.avatar_url ?? '',
-          email: user?.email ?? '',
+          id: user.id,
+          name: user.name,
+          username: user.username,
+          avatar_url: user.avatar_url ?? '',
+          email: user.email ?? '',
           emailVerified: null,
         },
       }
@@ -161,6 +209,14 @@ export default function PrismaAdapter(): Adapter {
         expires: prismaSession.expires,
         userId: prismaSession.id,
       }
+    },
+
+    async deleteSession(sessionToken) {
+      await prisma.session.delete({
+        where: {
+          session_token: sessionToken,
+        },
+      })
     },
   }
 }
