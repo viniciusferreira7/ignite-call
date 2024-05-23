@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { SessionWrapper } from './contexts/SessionWrapper'
+import { SessionWrapper } from './contexts/session-wrapper'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '700'] })
