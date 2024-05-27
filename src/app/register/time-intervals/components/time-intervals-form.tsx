@@ -39,8 +39,6 @@ export function TimeIntervalsForm() {
 
   const weekDays = getWeekDay()
 
-  console.log({ weekDays })
-
   return (
     <div className="mt-6 space-y-4 rounded-md bg-gray-800 p-4 md:p-6">
       <form onSubmit={handleSubmit(handleSetTimeIntervals)}>
