@@ -19,7 +19,10 @@ export default async function RootLayout({
   return (
     <SessionWrapper>
       <html lang="pt-br" className={inter.className}>
-        <body className="bg-gray-950 text-gray-100 antialiased">
+        <body
+          className="bg-gray-950 text-gray-100 antialiased"
+          suppressHydrationWarning={true}
+        >
           {children}
         </body>
       </html>

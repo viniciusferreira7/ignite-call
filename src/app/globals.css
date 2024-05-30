@@ -78,5 +78,6 @@
 @layer components {
   .input-time::-webkit-calendar-picker-indicator {
     filter: invert(100%) brightness(50%);
+
   }
 }

@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Control, InputRoot } from '@/components/ui/input'
 import { getWeekDay } from '@/utils/get-week-day'
 import { IconArrowRight } from '@tabler/icons-react'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 const timeIntervalsFormSchema = z.object({})
@@ -15,6 +15,7 @@ export function TimeIntervalsForm() {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { isSubmitting, errors },
   } = useForm({
     defaultValues: {
@@ -39,6 +40,8 @@ export function TimeIntervalsForm() {
 
   const weekDays = getWeekDay()
 
+  const intervals = watch('intervals')
+
   return (
     <div className="mt-6 space-y-4 rounded-md bg-gray-800 p-4 md:p-6">
       <form onSubmit={handleSubmit(handleSetTimeIntervals)}>
@@ -50,7 +53,18 @@ export function TimeIntervalsForm() {
                 className="flex items-center justify-between px-4 py-3"
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox />
+                  <Controller
+                    name={`intervals.${index}.enabled`}
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked === true)
+                        }}
+                        checked={field.value}
+                      />
+                    )}
+                  />
                   <p className="text-base font-medium text-gray-100">
                     {weekDays[field.weekDay]}
                   </p>
@@ -60,7 +74,8 @@ export function TimeIntervalsForm() {
                     <Control
                       type="time"
                       step={60}
-                      className="input-time"
+                      disabled={!intervals[index].enabled}
+                      className="input-time disabled:text-gray-500"
                       {...register(`intervals.${index}.startTime`)}
                     />
                   </InputRoot>
@@ -68,7 +83,8 @@ export function TimeIntervalsForm() {
                     <Control
                       type="time"
                       step={60}
-                      className="input-time"
+                      disabled={!intervals[index].enabled}
+                      className="input-time disabled:text-gray-500"
                       {...register(`intervals.${index}.endTime`)}
                     />
                   </InputRoot>
