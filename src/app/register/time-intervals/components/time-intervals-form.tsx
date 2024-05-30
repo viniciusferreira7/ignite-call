@@ -4,11 +4,30 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Control, InputRoot } from '@/components/ui/input'
 import { getWeekDay } from '@/utils/get-week-day'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { IconArrowRight } from '@tabler/icons-react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-const timeIntervalsFormSchema = z.object({})
+const timeIntervalsFormSchema = z.object({
+  intervals: z
+    .array(
+      z.object({
+        weekDay: z.number().lte(6).gte(0),
+        enabled: z.boolean(),
+        startTime: z.string(),
+        endTime: z.string(),
+      }),
+    )
+    .length(7)
+    .transform((intervals) => intervals.filter((interval) => interval.enabled))
+    .refine((intervals) => intervals.length >= 1, {
+      message: 'Você precisa selecionar pelo menos um dia da semana.',
+    }),
+})
+
+type TimeIntervalsFormSchemaInput = z.input<typeof timeIntervalsFormSchema>
+type TimeIntervalsFormSchemaOutput = z.output<typeof timeIntervalsFormSchema>
 
 export function TimeIntervalsForm() {
   const {
@@ -17,26 +36,33 @@ export function TimeIntervalsForm() {
     control,
     watch,
     formState: { isSubmitting, errors },
-  } = useForm({
-    defaultValues: {
-      intervals: [
-        { weekDay: 0, enabled: false, startTime: '08:00', endTime: '18:00' },
-        { weekDay: 1, enabled: true, startTime: '08:00', endTime: '18:00' },
-        { weekDay: 2, enabled: true, startTime: '08:00', endTime: '18:00' },
-        { weekDay: 3, enabled: true, startTime: '08:00', endTime: '18:00' },
-        { weekDay: 4, enabled: true, startTime: '08:00', endTime: '18:00' },
-        { weekDay: 5, enabled: true, startTime: '08:00', endTime: '18:00' },
-        { weekDay: 6, enabled: false, startTime: '08:00', endTime: '18:00' },
-      ],
+  } = useForm<TimeIntervalsFormSchemaInput, any, TimeIntervalsFormSchemaOutput>(
+    {
+      resolver: zodResolver(timeIntervalsFormSchema),
+      defaultValues: {
+        intervals: [
+          { weekDay: 0, enabled: false, startTime: '08:00', endTime: '18:00' },
+          { weekDay: 1, enabled: true, startTime: '08:00', endTime: '18:00' },
+          { weekDay: 2, enabled: true, startTime: '08:00', endTime: '18:00' },
+          { weekDay: 3, enabled: true, startTime: '08:00', endTime: '18:00' },
+          { weekDay: 4, enabled: true, startTime: '08:00', endTime: '18:00' },
+          { weekDay: 5, enabled: true, startTime: '08:00', endTime: '18:00' },
+          { weekDay: 6, enabled: false, startTime: '08:00', endTime: '18:00' },
+        ],
+      },
     },
-  })
+  )
 
   const { fields } = useFieldArray({
     control,
     name: 'intervals',
   })
 
-  async function handleSetTimeIntervals() { }
+  async function handleSetTimeIntervals(data: TimeIntervalsFormSchemaOutput) {
+    console.log(data)
+  }
+
+  console.log({ errors })
 
   const weekDays = getWeekDay()
 
@@ -93,6 +119,11 @@ export function TimeIntervalsForm() {
             )
           })}
         </div>
+        {errors.intervals && (
+          <p className="mb-2 text-xs text-red-500">
+            {errors.intervals.root?.message}
+          </p>
+        )}
         <Button
           variant="secondary"
           size="h-auto"
