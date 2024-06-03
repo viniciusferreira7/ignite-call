@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Control, InputRoot } from '@/components/ui/input'
+import { convertTimeToMinutes } from '@/utils/convert-time-to-minutes'
 import { getWeekDay } from '@/utils/get-week-day'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconArrowRight } from '@tabler/icons-react'
@@ -23,7 +24,28 @@ const timeIntervalsFormSchema = z.object({
     .transform((intervals) => intervals.filter((interval) => interval.enabled))
     .refine((intervals) => intervals.length >= 1, {
       message: 'Você precisa selecionar pelo menos um dia da semana.',
-    }),
+    })
+    .transform((intervals) => {
+      return intervals.map((interval) => {
+        return {
+          weekDay: interval.weekDay,
+          startTimeInMinutes: convertTimeToMinutes(interval.startTime),
+          endTimeInMinutes: convertTimeToMinutes(interval.endTime),
+        }
+      })
+    })
+    .refine(
+      (intervals) => {
+        return intervals.every(
+          (interval) =>
+            interval.endTimeInMinutes - 60 >= interval.startTimeInMinutes,
+        )
+      },
+      {
+        message:
+          'O horário de término deve ser pelo menos 1 hora distante do início.',
+      },
+    ),
 })
 
 type TimeIntervalsFormSchemaInput = z.input<typeof timeIntervalsFormSchema>
@@ -36,6 +58,7 @@ export function TimeIntervalsForm() {
     control,
     watch,
     formState: { isSubmitting, errors },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useForm<TimeIntervalsFormSchemaInput, any, TimeIntervalsFormSchemaOutput>(
     {
       resolver: zodResolver(timeIntervalsFormSchema),
@@ -53,6 +76,7 @@ export function TimeIntervalsForm() {
     },
   )
 
+  // FIXME: The control is conflicting with the input and output typing of the zod scheme
   const { fields } = useFieldArray({
     control,
     name: 'intervals',
@@ -61,8 +85,6 @@ export function TimeIntervalsForm() {
   async function handleSetTimeIntervals(data: TimeIntervalsFormSchemaOutput) {
     console.log(data)
   }
-
-  console.log({ errors })
 
   const weekDays = getWeekDay()
 
