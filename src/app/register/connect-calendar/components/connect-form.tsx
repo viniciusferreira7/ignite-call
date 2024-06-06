@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { IconArrowRight, IconCheck } from '@tabler/icons-react'
 import { signIn, useSession } from 'next-auth/react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
 export function ConnectForm() {
@@ -50,10 +51,14 @@ export function ConnectForm() {
       <Button
         variant="secondary"
         size="h-auto"
+        type="button"
         className="flex w-full items-center py-3"
         disabled={!isAuthenticated}
+        asChild
       >
-        Próximo passo <IconArrowRight size={16} />
+        <Link href="/register/time-intervals">
+          Próximo passo <IconArrowRight size={16} />
+        </Link>
       </Button>
     </form>
   )

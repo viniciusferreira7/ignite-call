@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Control, InputRoot } from '@/components/ui/input'
+import { api } from '@/lib/axios'
 import { convertTimeToMinutes } from '@/utils/convert-time-to-minutes'
 import { getWeekDay } from '@/utils/get-week-day'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -82,8 +83,11 @@ export function TimeIntervalsForm() {
     name: 'intervals',
   })
 
-  async function handleSetTimeIntervals(data: TimeIntervalsFormSchemaOutput) {
-    console.log(data)
+  async function handleSetTimeIntervals({
+    intervals,
+  }: TimeIntervalsFormSchemaOutput) {
+
+    await api.post('/users/time-intervals', { intervals })
   }
 
   const weekDays = getWeekDay()
