@@ -29,7 +29,7 @@ const InputRoot = React.forwardRef<HTMLElement, InputRootProps>(
 InputRoot.displayName = 'InputRoot'
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+  extends React.InputHTMLAttributes<HTMLInputElement> { }
 
 const Control = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
