@@ -8,6 +8,7 @@ import { convertTimeToMinutes } from '@/utils/convert-time-to-minutes'
 import { getWeekDay } from '@/utils/get-week-day'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconArrowRight } from '@tabler/icons-react'
+import { useRouter } from 'next/navigation'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -83,10 +84,14 @@ export function TimeIntervalsForm() {
     name: 'intervals',
   })
 
+  const router = useRouter()
+
   async function handleSetTimeIntervals({
     intervals,
   }: TimeIntervalsFormSchemaOutput) {
     await api.post('/users/time-intervals', { intervals })
+
+    router.push('/register/update-profile')
   }
 
   const weekDays = getWeekDay()
