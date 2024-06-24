@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { User } from './components'
+import { ScheduleForm, User } from './components'
 
 interface SchedulePageProps {
   params: {
@@ -27,6 +27,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
   return (
     <div className="mx-auto mb-4 mt-20 max-w-[852px] px-4">
       {!!user && <User {...user} />}
+      <ScheduleForm />
     </div>
   )
 }

@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Control, InputRoot } from '@/components/ui/input'
 import { api } from '@/lib/axios'
 import { convertTimeToMinutes } from '@/utils/convert-time-to-minutes'
-import { getWeekDay } from '@/utils/get-week-day'
+import { getWeekDays } from '@/utils/get-week-day'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconArrowRight } from '@tabler/icons-react'
 import { useRouter } from 'next/navigation'
@@ -94,7 +94,7 @@ export function TimeIntervalsForm() {
     router.push('/register/update-profile')
   }
 
-  const weekDays = getWeekDay()
+  const weekDays = getWeekDays()
 
   const intervals = watch('intervals')
 
