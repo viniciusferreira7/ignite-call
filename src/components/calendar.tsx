@@ -1,46 +1,70 @@
 import { getWeekDays } from '@/utils/get-week-day'
 import { IconCaretLeft, IconCaretRight } from '@tabler/icons-react'
+import { Button } from './ui/button'
 
 export function Calendar() {
   const shortWeekDays = getWeekDays({ weekday: 'short' })
 
   return (
-    <div>
-      <div>
-        <h3 className="mt-2 text-lg font-bold">
-          Junho <span>2022</span>
+    <div className="flex flex-col gap-6 p-6">
+      <div className="flex items-center justify-between">
+        <h3 className="mt-2 text-lg font-medium">
+          Junho <span className="text-gray-400">2022</span>
         </h3>
-        <div>
-          <button>
-            <IconCaretLeft />
-          </button>
-          <button>
-            <IconCaretRight />
-          </button>
+        <div className="flex items-center gap-2 text-gray-200">
+          <Button variant="ghost" className="p-2">
+            <IconCaretLeft className="size-5" />
+          </Button>
+          <Button variant="ghost" className="p-2">
+            <IconCaretRight className="size-5" />
+          </Button>
         </div>
       </div>
-      <table>
+      <table className="font-roboto w-full table-fixed border-spacing-1">
         <thead>
           <tr>
             {shortWeekDays.map((weekDay) => {
-              return <th key={weekDay}>{weekDay.toUpperCase()}</th>
+              return (
+                <th key={weekDay} className="text-sm font-medium text-gray-200">
+                  {weekDay.toUpperCase()}
+                </th>
+              )
             })}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="before:leading-9 before:text-gray-800 before:content-['.']">
           <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>
-              <button>1</button>
+            <td className="box-border"></td>
+            <td className="box-border"></td>
+            <td className="box-border"></td>
+            <td className="box-border"></td>
+            <td className="box-border">
+              <Button
+                variant="ghost"
+                size="h-auto"
+                disabled={true}
+                className="aspect-square w-full bg-gray-600 p-0 disabled:cursor-default disabled:bg-transparent disabled:opacity-40"
+              >
+                1
+              </Button>
             </td>
-            <td>
-              <button>2</button>
+            <td className="box-border">
+              <Button
+                variant="ghost"
+                size="h-auto"
+                className="aspect-square w-full bg-gray-600 p-0"
+              >
+                2
+              </Button>
             </td>
-            <td>
-              <button>3</button>
+            <td className="box-border">
+              <Button
+                variant="ghost"
+                size="h-auto"
+                className="aspect-square w-full bg-gray-600 p-0"
+              >
+                3
+              </Button>
             </td>
           </tr>
         </tbody>

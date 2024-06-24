@@ -18,6 +18,10 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        inter: ['var(--font-inter)'],
+        roboto: ['var(--font-roboto)'],
+      },
       gridTemplateColumns: {
         'username-form': '1fr auto',
       },

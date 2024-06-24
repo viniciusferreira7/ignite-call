@@ -1,8 +1,8 @@
-interface getWeekDaysParams {
-  weekday: 'long' | 'short' | 'narrow' | undefined
+interface GetWeekDaysParams {
+  weekday?: 'long' | 'short' | 'narrow'
 }
 
-export function getWeekDays({ weekday = 'long' }: getWeekDaysParams) {
+export function getWeekDays({ weekday = 'long' }: GetWeekDaysParams = {}) {
   const formatter = new Intl.DateTimeFormat('pt-BR', { weekday })
 
   return Array.from(Array(7).keys())
