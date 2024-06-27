@@ -19,7 +19,7 @@ export function CalendarStep() {
       >
         <Calendar />
         {isDateSelected && (
-          <div className="scrollbar scrollbar-thumb-gray-700 scrollbar-track-gray-800 bottom-0 right-0 top-0 w-[300px] overflow-y-scroll border-l border-gray-600 px-6 pt-6 lg:absolute">
+          <div className="bottom-0 right-0 top-0 w-[300px] overflow-y-scroll border-l border-gray-600 px-6 pt-6 scrollbar scrollbar-track-gray-800 scrollbar-thumb-gray-700 lg:absolute">
             <h1 className="mt-2 text-lg font-medium">
               Quinta-feira <span className="text-gray-400">27 de junho</span>
             </h1>
