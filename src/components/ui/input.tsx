@@ -29,7 +29,7 @@ const InputRoot = React.forwardRef<HTMLElement, InputRootProps>(
 InputRoot.displayName = 'InputRoot'
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> { }
+  extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const Control = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
@@ -56,7 +56,7 @@ const HelpText = React.forwardRef<HTMLParagraphElement, HelpTextProps>(
       <p
         ref={ref}
         className={cn(
-          'mt-2 text-xs text-gray-500',
+          'mt-2 text-sm font-bold text-gray-500',
           className,
           error && 'text-red-500',
         )}

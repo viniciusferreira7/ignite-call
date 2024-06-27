@@ -1,18 +1,41 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Control, InputRoot } from '@/components/ui/input'
+import { Control, HelpText, InputRoot } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { IconCalendarMonth, IconClock } from '@tabler/icons-react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+const confirmFormSchema = z.object({
+  name: z.string().min(3, {
+    message: 'O nome precisa ter no mínimo pelo menos 3 caracteres',
+  }),
+  email: z.string().email({ message: 'Digite um e-mail válido' }),
+  observations: z.string().nullable(),
+})
+
+type ConfirmFormSchema = z.input<typeof confirmFormSchema>
 
 export function ConfirmStep() {
-  function handleConfirmScheduling() { }
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm<ConfirmFormSchema>({
+    resolver: zodResolver(confirmFormSchema),
+  })
+
+  function handleConfirmScheduling(data: ConfirmFormSchema) {
+    console.log(data)
+  }
 
   return (
     <form
       className="mx-auto mt-6 max-w-[540px] space-y-4 rounded-md bg-gray-800 p-4 md:p-6"
-      onSubmit={handleConfirmScheduling}
+      onSubmit={handleSubmit(handleConfirmScheduling)}
     >
       <div className="mb-2 flex items-center gap-4 border-b border-gray-600 pb-6">
         <h1 className="mt-2 flex items-center gap-2 text-lg font-medium">
@@ -30,9 +53,12 @@ export function ConfirmStep() {
           <Control
             id="name"
             className="placeholder:text-gray-500"
-          // {...register('username')}
+            {...register('name')}
           />
         </InputRoot>
+        {!!errors.name && (
+          <HelpText error={!!errors.name}>{errors.name.message}</HelpText>
+        )}
       </div>
       <div className="space-y-2">
         <Label htmlFor="email">Endereço de email</Label>
@@ -41,22 +67,22 @@ export function ConfirmStep() {
             id="email"
             type="email"
             className="placeholder:text-gray-500"
-          // {...register('username')}
+            {...register('email')}
           />
         </InputRoot>
+        {!!errors.email && (
+          <HelpText error={!!errors.email}>{errors.email.message}</HelpText>
+        )}
       </div>
       <div className="space-y-2">
         <Label htmlFor="observations">Observações</Label>
-        <Textarea
-          id="observations"
-        // {...register('bio')}
-        />
+        <Textarea id="observations" {...register('observations')} />
       </div>
       <div className="mt-2 flex justify-end gap-2">
         <Button type="button" variant="ghost">
           Cancelar
         </Button>
-        <Button type="submit" variant="secondary">
+        <Button type="submit" variant="secondary" disabled={isSubmitting}>
           Confirma
         </Button>
       </div>

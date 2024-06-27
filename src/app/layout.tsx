@@ -30,7 +30,7 @@ export default async function RootLayout({
     <SessionWrapper>
       <html lang="pt-br" className={`${inter.variable} ${roboto.variable}`}>
         <body
-          className="font-roboto bg-gray-950 text-gray-100 antialiased"
+          className="bg-gray-950 font-roboto text-gray-100 antialiased"
           suppressHydrationWarning={true}
         >
           {children}
