@@ -8,9 +8,9 @@ export function Calendar() {
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
-        <h3 className="mt-2 text-lg font-medium">
+        <h2 className="mt-2 text-lg font-medium">
           Junho <span className="text-gray-400">2022</span>
-        </h3>
+        </h2>
         <div className="flex items-center gap-2 text-gray-200">
           <Button variant="ghost" className="p-2">
             <IconCaretLeft className="size-5" />
@@ -20,7 +20,7 @@ export function Calendar() {
           </Button>
         </div>
       </div>
-      <table className="font-roboto w-full table-fixed border-spacing-1">
+      <table className="w-full table-fixed border-spacing-1 font-roboto">
         <thead>
           <tr>
             {shortWeekDays.map((weekDay) => {
