@@ -1,21 +1,52 @@
+import '../lib/dayjs'
+
 import { getWeekDays } from '@/utils/get-week-day'
 import { IconCaretLeft, IconCaretRight } from '@tabler/icons-react'
 import { Button } from './ui/button'
+import { useState } from 'react'
+import dayjs from 'dayjs'
 
 export function Calendar() {
+  const [currentDate, setCurrentDate] = useState(() => dayjs().set('date', 1))
+
+  function handlePreviousMonth() {
+    const previousMonthDate = currentDate.subtract(1, 'month')
+
+    setCurrentDate(previousMonthDate)
+  }
+
+  function handleNextMonth() {
+    const nextMonthDate = currentDate.add(1, 'month')
+
+    setCurrentDate(nextMonthDate)
+  }
+
   const shortWeekDays = getWeekDays({ weekday: 'short' })
+
+  const currentMonth = currentDate.format('MMMM')
+  const currentYear = currentDate.format('YYYY')
 
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
-        <h2 className="mt-2 text-lg font-medium">
-          Junho <span className="text-gray-400">2022</span>
+        <h2 className="mt-2 text-lg font-medium capitalize">
+          {currentMonth} <span className="text-gray-400">{currentYear}</span>
         </h2>
         <div className="flex items-center gap-2 text-gray-200">
-          <Button variant="ghost" className="p-2">
+          <Button
+            title="Mês anterior"
+            variant="ghost"
+            className="p-2"
+            onClick={handlePreviousMonth}
+          >
             <IconCaretLeft className="size-5" />
           </Button>
-          <Button variant="ghost" className="p-2">
+          <Button
+            title="Próximo mês"
+            variant="ghost"
+            className="p-2"
+            onClick={handleNextMonth}
+          >
             <IconCaretRight className="size-5" />
           </Button>
         </div>
@@ -42,7 +73,7 @@ export function Calendar() {
               <Button
                 variant="ghost"
                 size="h-auto"
-                disabled={true}
+                disabled
                 className="aspect-square w-full bg-gray-600 p-0 disabled:cursor-default disabled:bg-transparent disabled:opacity-40"
               >
                 1

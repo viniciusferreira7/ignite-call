@@ -1,3 +1,5 @@
+import '../lib/dayjs'
+
 import type { Metadata } from 'next'
 import { Inter, Roboto } from 'next/font/google'
 import { SessionWrapper } from './contexts/session-wrapper'
