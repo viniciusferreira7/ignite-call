@@ -2,11 +2,24 @@ import '../lib/dayjs'
 
 import { getWeekDays } from '@/utils/get-week-day'
 import { IconCaretLeft, IconCaretRight } from '@tabler/icons-react'
-import { Button } from './ui/button'
-import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
+import { useMemo, useState } from 'react'
+import { Button } from './ui/button'
+import { useAutoAnimate } from '@formkit/auto-animate/react'
+
+interface CalendarWeek {
+  week: number
+  days: Array<{
+    date: dayjs.Dayjs
+    disabled: boolean
+  }>
+}
+
+type CalendarWeeks = CalendarWeek[]
 
 export function Calendar() {
+  const [animationParent] = useAutoAnimate()
+
   const [currentDate, setCurrentDate] = useState(() => dayjs().set('date', 1))
 
   function handlePreviousMonth() {
@@ -43,13 +56,48 @@ export function Calendar() {
       })
       .reverse()
 
-    return [...previousMonthFillArray, ...dayjsInMonthArray]
+    const lastDayInMonth = currentDate.set('date', currentDate.daysInMonth())
+
+    const lastWeekDay = lastDayInMonth.get('day')
+
+    const nextMonthFillArray = Array.from({
+      length: 7 - (lastWeekDay + 1),
+    }).map((_, index) => {
+      return lastDayInMonth.add(index + 1, 'day')
+    })
+
+    const calendarDays = [
+      ...previousMonthFillArray.map((date) => {
+        return { date, disabled: true }
+      }),
+      ...dayjsInMonthArray.map((date) => {
+        return { date, disabled: false }
+      }),
+      ...nextMonthFillArray.map((date) => {
+        return { date, disabled: true }
+      }),
+    ]
+
+    const calendarWeeks = calendarDays.reduce<CalendarWeeks>(
+      (weeks, _, i, original) => {
+        const isNewWeek = i % 7 === 0
+
+        if (isNewWeek) {
+          weeks.push({
+            week: i / 7 + 1,
+            days: original.slice(i, i + 7),
+          })
+        }
+        return weeks
+      },
+      [],
+    )
+
+    return calendarWeeks
   }, [currentDate])
 
-  console.log({ calendarWeeks })
-
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div ref={animationParent} className="flex flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
         <h2 className="mt-2 text-lg font-medium capitalize">
           {currentMonth} <span className="text-gray-400">{currentYear}</span>
@@ -73,7 +121,10 @@ export function Calendar() {
           </Button>
         </div>
       </div>
-      <table className="w-full table-fixed border-spacing-1 font-roboto">
+      <table
+        ref={animationParent}
+        className="w-full table-fixed border-spacing-1 font-roboto"
+      >
         <thead>
           <tr>
             {shortWeekDays.map((weekDay) => {
@@ -86,40 +137,26 @@ export function Calendar() {
           </tr>
         </thead>
         <tbody className="before:leading-9 before:text-gray-800 before:content-['.']">
-          <tr>
-            <td className="box-border"></td>
-            <td className="box-border"></td>
-            <td className="box-border"></td>
-            <td className="box-border"></td>
-            <td className="box-border">
-              <Button
-                variant="ghost"
-                size="h-auto"
-                disabled
-                className="aspect-square w-full bg-gray-600 p-0 disabled:cursor-default disabled:bg-transparent disabled:opacity-40"
-              >
-                1
-              </Button>
-            </td>
-            <td className="box-border">
-              <Button
-                variant="ghost"
-                size="h-auto"
-                className="aspect-square w-full bg-gray-600 p-0"
-              >
-                2
-              </Button>
-            </td>
-            <td className="box-border">
-              <Button
-                variant="ghost"
-                size="h-auto"
-                className="aspect-square w-full bg-gray-600 p-0"
-              >
-                3
-              </Button>
-            </td>
-          </tr>
+          {calendarWeeks.map(({ week, days }) => {
+            return (
+              <tr key={week}>
+                {days.map(({ date, disabled }) => {
+                  return (
+                    <td className="box-border" key={date.toString()}>
+                      <Button
+                        variant="ghost"
+                        size="h-auto"
+                        disabled={disabled}
+                        className="aspect-square w-full bg-gray-600 p-0 disabled:cursor-default disabled:bg-transparent disabled:opacity-40"
+                      >
+                        {date.get('date')}
+                      </Button>
+                    </td>
+                  )
+                })}
+              </tr>
+            )
+          })}
         </tbody>
       </table>
     </div>
