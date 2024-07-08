@@ -5,10 +5,13 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 import { useAutoAnimate } from '@formkit/auto-animate/react'
+import { useState } from 'react'
 
 export function CalendarStep() {
   const [animationParent] = useAutoAnimate()
-  const isDateSelected = false
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+
+  const isDateSelected = !!selectedDate
 
   return (
     <div
@@ -18,7 +21,7 @@ export function CalendarStep() {
         isDateSelected && 'w-full grid-cols-1 lg:grid-cols-[1fr_300px]',
       )}
     >
-      <Calendar />
+      <Calendar selectedDate={selectedDate} onDateSelected={setSelectedDate} />
       {isDateSelected && (
         <div className="bottom-0 right-0 top-0 w-[300px] overflow-y-scroll border-l border-gray-600 px-6 pt-6 scrollbar scrollbar-track-gray-800 scrollbar-thumb-gray-700 lg:absolute">
           <h1 className="mt-2 text-lg font-medium">
