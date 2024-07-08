@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 import { useAutoAnimate } from '@formkit/auto-animate/react'
+import dayjs from 'dayjs'
 import { useState } from 'react'
 
 export function CalendarStep() {
@@ -12,6 +13,11 @@ export function CalendarStep() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
   const isDateSelected = !!selectedDate
+
+  const weekDay = selectedDate ? dayjs(selectedDate).format('dddd') : null
+  const dayWithMonth = selectedDate
+    ? dayjs(selectedDate).format('DD[ de ]MMMM')
+    : null
 
   return (
     <div
@@ -25,7 +31,7 @@ export function CalendarStep() {
       {isDateSelected && (
         <div className="bottom-0 right-0 top-0 w-[300px] overflow-y-scroll border-l border-gray-600 px-6 pt-6 scrollbar scrollbar-track-gray-800 scrollbar-thumb-gray-700 lg:absolute">
           <h1 className="mt-2 text-lg font-medium">
-            Quinta-feira <span className="text-gray-400">27 de junho</span>
+            {weekDay} <span className="text-gray-400">{dayWithMonth}</span>
           </h1>
           <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-1">
             <Button
