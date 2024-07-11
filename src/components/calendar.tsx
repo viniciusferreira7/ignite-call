@@ -6,6 +6,7 @@ import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import { Button } from './ui/button'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
+import { useSearchParams } from 'next/navigation'
 
 interface CalendarWeek {
   week: number
