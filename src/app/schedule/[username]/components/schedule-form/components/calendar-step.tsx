@@ -6,9 +6,10 @@ import { api } from '@/lib/axios'
 import { cn } from '@/lib/utils'
 
 import { useAutoAnimate } from '@formkit/auto-animate/react'
+import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { useParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 interface Params {
   [key: string]: string
@@ -24,7 +25,6 @@ export function CalendarStep() {
   const { username } = useParams<Params>()
   const [animationParent] = useAutoAnimate()
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-  const [availability, setAvailability] = useState<Availability | null>(null)
 
   const isDateSelected = !!selectedDate
 
@@ -33,17 +33,23 @@ export function CalendarStep() {
     ? dayjs(selectedDate).format('DD[ de ]MMMM')
     : null
 
-  useEffect(() => {
-    if (selectedDate) {
-      api
-        .get(`/users/${username}/availability`, {
-          params: {
-            date: dayjs(selectedDate).format('YYYY-MM-DD'),
-          },
-        })
-        .then((response) => setAvailability(response.data))
-    }
-  }, [selectedDate, username])
+  const selectedDateWithoutTime = selectedDate
+    ? dayjs(selectedDate).format('YYYY-MM-DD')
+    : null
+
+  const { data: availability } = useQuery<Availability>({
+    queryKey: ['availability-times', selectedDateWithoutTime],
+    queryFn: async () => {
+      const response = await api.get(`/users/${username}/availability`, {
+        params: {
+          date: selectedDateWithoutTime,
+        },
+      })
+
+      return response.data
+    },
+    enabled: !!selectedDate,
+  })
 
   return (
     <div

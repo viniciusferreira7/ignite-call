@@ -2,6 +2,7 @@ import '../lib/dayjs'
 
 import type { Metadata } from 'next'
 import { Inter, Roboto } from 'next/font/google'
+import { QueryClientWrapper } from './contexts/query-client-wrapper'
 import { SessionWrapper } from './contexts/session-wrapper'
 import './globals.css'
 
@@ -30,14 +31,16 @@ export default async function RootLayout({
 }>) {
   return (
     <SessionWrapper>
-      <html lang="pt-br" className={`${inter.variable} ${roboto.variable}`}>
-        <body
-          className="bg-gray-950 font-roboto text-gray-100 antialiased"
-          suppressHydrationWarning={true}
-        >
-          {children}
-        </body>
-      </html>
+      <QueryClientWrapper>
+        <html lang="pt-br" className={`${inter.variable} ${roboto.variable}`}>
+          <body
+            className="bg-gray-950 font-roboto text-gray-100 antialiased"
+            suppressHydrationWarning={true}
+          >
+            {children}
+          </body>
+        </html>
+      </QueryClientWrapper>
     </SessionWrapper>
   )
 }
