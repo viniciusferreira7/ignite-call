@@ -2,15 +2,24 @@
 
 import { Calendar } from '@/components/calendar'
 import { Button } from '@/components/ui/button'
+import { api } from '@/lib/axios'
 import { cn } from '@/lib/utils'
 
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import dayjs from 'dayjs'
-import { useState } from 'react'
+import { useParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+
+interface Params {
+  [key: string]: string
+  username: string
+}
 
 export function CalendarStep() {
+  const { username } = useParams<Params>()
   const [animationParent] = useAutoAnimate()
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [availability, setAvailability] = useState(null)
 
   const isDateSelected = !!selectedDate
 
@@ -18,6 +27,18 @@ export function CalendarStep() {
   const dayWithMonth = selectedDate
     ? dayjs(selectedDate).format('DD[ de ]MMMM')
     : null
+
+  useEffect(() => {
+    if (selectedDate) {
+      api
+        .get(`/users/${username}/availability`, {
+          params: {
+            date: dayjs(selectedDate).format('YYYY-MM-DD'),
+          },
+        })
+        .then((response) => console.log(response.data))
+    }
+  }, [selectedDate, username])
 
   return (
     <div
