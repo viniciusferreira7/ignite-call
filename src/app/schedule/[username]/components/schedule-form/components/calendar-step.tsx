@@ -15,11 +15,16 @@ interface Params {
   username: string
 }
 
+interface Availability {
+  possibleTimes: number[]
+  availabilityTimes: number[]
+}
+
 export function CalendarStep() {
   const { username } = useParams<Params>()
   const [animationParent] = useAutoAnimate()
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-  const [availability, setAvailability] = useState(null)
+  const [availability, setAvailability] = useState<Availability | null>(null)
 
   const isDateSelected = !!selectedDate
 
@@ -36,7 +41,7 @@ export function CalendarStep() {
             date: dayjs(selectedDate).format('YYYY-MM-DD'),
           },
         })
-        .then((response) => console.log(response.data))
+        .then((response) => setAvailability(response.data))
     }
   }, [selectedDate, username])
 
@@ -55,85 +60,21 @@ export function CalendarStep() {
             {weekDay} <span className="text-gray-400">{dayWithMonth}</span>
           </h1>
           <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-1">
-            <Button
-              disabled
-              variant="outline"
-              className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
-            >
-              00:00h
-            </Button>
-            <Button
-              variant="outline"
-              className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
-            >
-              01:00h
-            </Button>
-            <Button
-              variant="outline"
-              className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
-            >
-              02:00h
-            </Button>
-            <Button
-              variant="outline"
-              className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
-            >
-              03:00h
-            </Button>
-            <Button
-              variant="outline"
-              className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
-            >
-              04:00h
-            </Button>
-            <Button
-              variant="outline"
-              className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
-            >
-              05:00h
-            </Button>
-            <Button
-              variant="outline"
-              className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
-            >
-              06:00h
-            </Button>
-            <Button
-              variant="outline"
-              className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
-            >
-              07:00h
-            </Button>
-            <Button
-              variant="outline"
-              className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
-            >
-              08:00h
-            </Button>
-            <Button
-              variant="outline"
-              className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
-            >
-              09:00h
-            </Button>
-            <Button
-              variant="outline"
-              className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
-            >
-              10:00h
-            </Button>
-            <Button
-              variant="outline"
-              className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
-            >
-              11:00h
-            </Button>
-            <Button
-              variant="outline"
-              className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
-            >
-              12:00h
-            </Button>
+            {availability?.possibleTimes.map((possibleTime, index) => {
+              const blockTime =
+                !availability?.availabilityTimes.includes(possibleTime)
+
+              return (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
+                  disabled={blockTime}
+                >
+                  {possibleTime.toString().padStart(2, '0')}:00h
+                </Button>
+              )
+            })}
           </div>
         </div>
       )}

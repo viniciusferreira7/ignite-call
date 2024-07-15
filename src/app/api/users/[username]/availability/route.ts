@@ -48,7 +48,10 @@ export async function GET(request: NextRequest, { params }: Params) {
   const isPastDate = referenceDate.endOf('day').isBefore()
 
   if (isPastDate) {
-    return new Response(JSON.stringify({ availability: [] }), { status: 200 })
+    return new Response(
+      JSON.stringify({ possibleTimes: [], availabilityTimes: [] }),
+      { status: 200 },
+    )
   }
 
   const userAvailability = await prisma.userTimeIntervals.findFirst({
@@ -59,7 +62,10 @@ export async function GET(request: NextRequest, { params }: Params) {
   })
 
   if (!userAvailability) {
-    return new Response(JSON.stringify({ availability: [] }), { status: 200 })
+    return new Response(
+      JSON.stringify({ possibleTimes: [], availabilityTimes: [] }),
+      { status: 200 },
+    )
   }
 
   const { time_start_time_in_minutes, time_end_time_in_minutes } =
@@ -93,5 +99,7 @@ export async function GET(request: NextRequest, { params }: Params) {
     )
   })
 
-  return new Response(JSON.stringify({ availabilityTimes }), { status: 200 })
+  return new Response(JSON.stringify({ possibleTimes, availabilityTimes }), {
+    status: 200,
+  })
 }
