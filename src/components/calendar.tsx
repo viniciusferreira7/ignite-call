@@ -6,7 +6,9 @@ import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import { Button } from './ui/button'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
-import { useSearchParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
+import { api } from '@/lib/axios'
+import { useQuery } from '@tanstack/react-query'
 
 interface CalendarWeek {
   week: number
@@ -18,12 +20,17 @@ interface CalendarWeek {
 
 type CalendarWeeks = CalendarWeek[]
 
+interface BlockedDates {
+  blockedWeekdays: number[]
+}
+
 interface CalendarProps {
   selectedDate: Date | null
   onDateSelected: (date: Date) => void
 }
 
 export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
+  const { username } = useParams<{ username: string }>()
   const [animationParent] = useAutoAnimate()
 
   const [currentDate, setCurrentDate] = useState(() => dayjs().set('date', 1))
@@ -44,6 +51,28 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
 
   const currentMonth = currentDate.format('MMMM')
   const currentYear = currentDate.format('YYYY')
+
+  const { data: blockedDates } = useQuery<BlockedDates>({
+    queryKey: [
+      'blocked-dates',
+      'year',
+      currentDate.get('year'),
+      'month',
+      currentDate.get('month'),
+    ],
+    queryFn: async () => {
+      const response = await api.get(`/users/${username}/blocked-dates`, {
+        params: {
+          year: currentDate.get('year'),
+          month: currentDate.get('month'),
+        },
+      })
+
+      return response.data
+    },
+  })
+
+  console.log(currentDate.get('month'))
 
   const calendarWeeks = useMemo(() => {
     const dayjsInMonthArray = Array.from({
@@ -77,7 +106,12 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
         return { date, disabled: true }
       }),
       ...dayjsInMonthArray.map((date) => {
-        return { date, disabled: date.endOf('date').isBefore(new Date()) }
+        return {
+          date,
+          disabled:
+            date.endOf('date').isBefore() ||
+            blockedDates?.blockedWeekdays.includes(date.get('day')),
+        }
       }),
       ...nextMonthFillArray.map((date) => {
         return { date, disabled: true }
@@ -100,7 +134,7 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
     )
 
     return calendarWeeks
-  }, [currentDate])
+  }, [currentDate, blockedDates])
 
   return (
     <div ref={animationParent} className="flex flex-col gap-6 p-6">
