@@ -68,11 +68,11 @@ export async function GET(request: NextRequest, { params }: Params) {
     )
   }
 
-  const { time_start_time_in_minutes, time_end_time_in_minutes } =
+  const { time_start_in_minutes, time_end_in_minutes } =
     userAvailability
 
-  const startHours = time_start_time_in_minutes / 60
-  const endHours = time_end_time_in_minutes / 60
+  const startHours = time_start_in_minutes / 60
+  const endHours = time_end_in_minutes / 60
 
   const possibleTimes = Array.from({ length: endHours - startHours }).map(
     (_, index) => {
