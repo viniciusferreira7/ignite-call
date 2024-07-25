@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button'
 import { Control, HelpText, InputRoot } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { api } from '@/lib/axios'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconCalendarMonth, IconClock } from '@tabler/icons-react'
 import dayjs from 'dayjs'
+import { useParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -29,6 +31,8 @@ export function ConfirmStep({
   schedulingDate,
   onCancelConfirmation,
 }: ConfirmStepProps) {
+  const { username } = useParams<{ username: string }>()
+
   const {
     handleSubmit,
     register,
@@ -37,13 +41,20 @@ export function ConfirmStep({
     resolver: zodResolver(confirmFormSchema),
   })
 
-  function handleConfirmScheduling(data: ConfirmFormSchema) {
-    console.log(data)
+  async function handleConfirmScheduling(data: ConfirmFormSchema) {
+    await api.post(`/users/${username}/schedule`, {
+      name: data.name,
+      email: data.email,
+      observations: data.observations,
+      date: schedulingDate,
+    })
+
+    onCancelConfirmation()
   }
 
   const weekDay = dayjs(schedulingDate).format('dddd')
   const describedDate = dayjs(schedulingDate).format('DD[ de ]MMMM[ de ] YYYY')
-  const hour = dayjs(schedulingDate).format('HH:[00h]')
+  const hour = dayjs(schedulingDate).startOf('hour').format('HH:mm[h]')
 
   return (
     <form
