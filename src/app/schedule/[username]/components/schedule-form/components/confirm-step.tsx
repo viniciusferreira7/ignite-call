@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconCalendarMonth, IconClock } from '@tabler/icons-react'
+import dayjs from 'dayjs'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -19,7 +20,15 @@ const confirmFormSchema = z.object({
 
 type ConfirmFormSchema = z.input<typeof confirmFormSchema>
 
-export function ConfirmStep() {
+interface ConfirmStepProps {
+  schedulingDate: Date
+  onCancelConfirmation: () => void
+}
+
+export function ConfirmStep({
+  schedulingDate,
+  onCancelConfirmation,
+}: ConfirmStepProps) {
   const {
     handleSubmit,
     register,
@@ -32,6 +41,10 @@ export function ConfirmStep() {
     console.log(data)
   }
 
+  const weekDay = dayjs(schedulingDate).format('dddd')
+  const describedDate = dayjs(schedulingDate).format('DD[ de ]MMMM[ de ] YYYY')
+  const hour = dayjs(schedulingDate).format('HH:[00h]')
+
   return (
     <form
       className="mx-auto mt-6 max-w-[540px] space-y-4 rounded-md bg-gray-800 p-4 md:p-6"
@@ -39,12 +52,12 @@ export function ConfirmStep() {
     >
       <div className="mb-2 flex items-center gap-4 border-b border-gray-600 pb-6">
         <h1 className="mt-2 flex items-center gap-2 text-lg font-medium">
-          <IconCalendarMonth /> Quinta-feira{' '}
-          <span className="text-gray-400">27 de junho</span>
+          <IconCalendarMonth /> {weekDay}
+          <span className="text-gray-400">{describedDate}</span>
         </h1>
         <p className="mt-2 flex items-center gap-2 text-lg font-medium">
           <IconClock />
-          12:00
+          {hour}
         </p>
       </div>
       <div className="space-y-2">
@@ -79,7 +92,7 @@ export function ConfirmStep() {
         <Textarea id="observations" {...register('observations')} />
       </div>
       <div className="mt-2 flex justify-end gap-2">
-        <Button type="button" variant="ghost">
+        <Button type="button" variant="ghost" onClick={onCancelConfirmation}>
           Cancelar
         </Button>
         <Button type="submit" variant="secondary" disabled={isSubmitting}>

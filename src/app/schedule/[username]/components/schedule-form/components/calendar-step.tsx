@@ -21,7 +21,11 @@ interface Availability {
   availabilityTimes: number[]
 }
 
-export function CalendarStep() {
+interface CalendarStepProps {
+  onSelectDateTime: (date: Date) => void
+}
+
+export function CalendarStep({ onSelectDateTime }: CalendarStepProps) {
   const { username } = useParams<Params>()
   const [animationParent] = useAutoAnimate()
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
@@ -51,6 +55,12 @@ export function CalendarStep() {
     enabled: !!selectedDate,
   })
 
+  function handleSelectTime(hour: number) {
+    const dateWithTime = dayjs(selectedDate).set('hour', hour).toDate()
+
+    onSelectDateTime(dateWithTime)
+  }
+
   return (
     <div
       ref={animationParent}
@@ -59,7 +69,7 @@ export function CalendarStep() {
         isDateSelected && 'w-full grid-cols-1 lg:grid-cols-[1fr_300px]',
       )}
     >
-      <Calendar selectedDate={selectedDate} onDateSelected={setSelectedDate} />
+      <Calendar onDateSelected={setSelectedDate} />
       {isDateSelected && (
         <div className="bottom-0 right-0 top-0 w-[300px] overflow-y-scroll border-l border-gray-600 px-6 pt-6 scrollbar scrollbar-track-gray-800 scrollbar-thumb-gray-700 lg:absolute">
           <h1 className="mt-2 text-lg font-medium">
@@ -76,6 +86,7 @@ export function CalendarStep() {
                   variant="outline"
                   className="cursor-pointer rounded-sm border-0 bg-gray-600 p-0 pt-2 text-sm text-gray-100 last:mb-6 hover:bg-gray-500 disabled:cursor-default disabled:bg-none disabled:opacity-40"
                   disabled={blockTime}
+                  onClick={() => handleSelectTime(possibleTime)}
                 >
                   {possibleTime.toString().padStart(2, '0')}:00h
                 </Button>

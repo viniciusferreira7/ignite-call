@@ -1,14 +1,14 @@
 import '../lib/dayjs'
 
+import { api } from '@/lib/axios'
 import { getWeekDays } from '@/utils/get-week-day'
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { IconCaretLeft, IconCaretRight } from '@tabler/icons-react'
+import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
+import { useParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import { Button } from './ui/button'
-import { useAutoAnimate } from '@formkit/auto-animate/react'
-import { useParams, useSearchParams } from 'next/navigation'
-import { api } from '@/lib/axios'
-import { useQuery } from '@tanstack/react-query'
 
 interface CalendarWeek {
   week: number
@@ -26,11 +26,10 @@ interface BlockedDates {
 }
 
 interface CalendarProps {
-  selectedDate: Date | null
   onDateSelected: (date: Date) => void
 }
 
-export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
+export function Calendar({ onDateSelected }: CalendarProps) {
   const { username } = useParams<{ username: string }>()
   const [animationParent] = useAutoAnimate()
 
