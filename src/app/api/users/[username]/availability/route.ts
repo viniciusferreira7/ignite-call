@@ -68,8 +68,7 @@ export async function GET(request: NextRequest, { params }: Params) {
     )
   }
 
-  const { time_start_in_minutes, time_end_in_minutes } =
-    userAvailability
+  const { time_start_in_minutes, time_end_in_minutes } = userAvailability
 
   const startHours = time_start_in_minutes / 60
   const endHours = time_end_in_minutes / 60
@@ -94,9 +93,13 @@ export async function GET(request: NextRequest, { params }: Params) {
   })
 
   const availabilityTimes = possibleTimes.filter((time) => {
-    return !blockedTimes.some(
+    const isTimeBlocked = blockedTimes.some(
       (blockedTime) => blockedTime.date.getHours() === time,
     )
+
+    const isTimeInPast = referenceDate.set('hour', time).isBefore()
+
+    return !isTimeBlocked && !isTimeInPast
   })
 
   return new Response(JSON.stringify({ possibleTimes, availabilityTimes }), {
