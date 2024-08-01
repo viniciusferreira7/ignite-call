@@ -2,6 +2,12 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { getServerSession } from 'next-auth'
 import { MultiStep } from '../components'
 import { UpdateProfileForm } from './components/update-profile-form'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Atualize seu perfil',
+  robots: 'noindex, nofollow',
+}
 
 export default async function UpdateProfilePage() {
   const session = await getServerSession(authOptions)

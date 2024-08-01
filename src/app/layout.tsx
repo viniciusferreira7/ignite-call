@@ -19,9 +19,12 @@ const roboto = Roboto({
 })
 
 export const metadata: Metadata = {
-  title: 'Ignite Call',
+  title: {
+    template: '%s | Ignite Call',
+    absolute: 'Ignite Call',
+  },
   description:
-    'Create your scheduling in this app integrate with google calendar',
+    'Criar o seu agendamento nesta aplicação integrar com o google calendar',
 }
 
 export default async function RootLayout({

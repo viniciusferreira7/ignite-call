@@ -1,5 +1,11 @@
+import { Metadata } from 'next'
 import { MultiStep } from '../components'
 import { ConnectForm } from './components'
+
+export const metadata: Metadata = {
+  title: 'Conecte sua agenda do Google',
+  robots: 'noindex, nofollow',
+}
 
 export default function ConnectCalendarPage() {
   return (

@@ -1,4 +1,9 @@
+import { Metadata } from 'next'
 import { MultiStep, RegisterForm } from './components'
+
+export const metadata: Metadata = {
+  title: 'Crie uma conta',
+}
 
 export default function RegisterPage() {
   return (

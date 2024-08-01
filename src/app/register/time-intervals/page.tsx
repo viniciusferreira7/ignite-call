@@ -1,5 +1,11 @@
+import { Metadata } from 'next'
 import { MultiStep } from '../components'
 import { TimeIntervalsForm } from './components/time-intervals-form'
+
+export const metadata: Metadata = {
+  title: 'Selecione sua disponibilidade',
+  robots: 'noindex, nofollow',
+}
 
 export default function TimeIntervalsPage() {
   return (

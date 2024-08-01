@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { Metadata } from 'next'
 import { ScheduleForm, User } from './components'
 
 interface SchedulePageProps {
@@ -18,6 +19,16 @@ async function getUser(username: string) {
     name: user?.name,
     bio: user?.bio,
     avatarUrl: user?.avatar_url,
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: SchedulePageProps): Promise<Metadata> {
+  const user = await getUser(params.username)
+
+  return {
+    title: `Agendar com ${user.name}`,
   }
 }
 
