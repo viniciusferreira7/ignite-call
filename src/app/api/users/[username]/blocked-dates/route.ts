@@ -6,8 +6,6 @@ interface Params {
 }
 
 export async function GET(request: NextRequest, { params }: Params) {
-  console.log({ params })
-
   const user = await prisma.user.findUnique({
     where: {
       username: params.username,
