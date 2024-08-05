@@ -6,7 +6,7 @@
     "prestart:dev": "docker compose --env-file .env up -d",
     "start:dev": "next dev",
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint --fix"
   },
