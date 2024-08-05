@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { MultiStep } from '../components'
 import { ConnectForm } from './components'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
   title: 'Conecte sua agenda do Google',
@@ -18,7 +19,9 @@ export default function ConnectCalendarPage() {
         </p>
         <MultiStep size={4} current={2} />
       </div>
-      <ConnectForm />
+      <Suspense fallback="Carregando...">
+        <ConnectForm />
+      </Suspense>
     </main>
   )
 }

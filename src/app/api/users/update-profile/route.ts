@@ -1,7 +1,7 @@
+import { authOptions } from '@/lib/auth-options'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { z } from 'zod'
-import { authOptions } from '../../auth/[...nextauth]/route'
 
 const updateProfileBodySchema = z.object({
   bio: z.string().optional(),
