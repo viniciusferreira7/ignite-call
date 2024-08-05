@@ -2,6 +2,9 @@ import { z } from 'zod'
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 interface Params {
   params: { username: string }
@@ -25,11 +28,15 @@ export async function GET(request: NextRequest, { params }: Params) {
   const searchParams = request.nextUrl.searchParams
 
   const date = searchParams.get('date')
+  const timezoneOffset = searchParams.get('timezoneOffset')
 
-  if (!date) {
-    return new Response(JSON.stringify({ message: 'Date is not provided.' }), {
-      status: 400,
-    })
+  if (!date || !timezoneOffset) {
+    return new Response(
+      JSON.stringify({ message: 'Date or timezoneOffset is not provided.' }),
+      {
+        status: 400,
+      },
+    )
   }
 
   const user = await prisma.user.findUnique({
@@ -46,6 +53,11 @@ export async function GET(request: NextRequest, { params }: Params) {
 
   const referenceDate = dayjs(date)
   const isPastDate = referenceDate.endOf('day').isBefore()
+
+  const timezoneOffsetInHours = Number(timezoneOffset) / 60
+
+  const referenceDateTimeZoneOffsetInHours =
+    referenceDate.toDate().getTimezoneOffset() / 60
 
   if (isPastDate) {
     return new Response(
@@ -70,12 +82,12 @@ export async function GET(request: NextRequest, { params }: Params) {
 
   const { time_start_in_minutes, time_end_in_minutes } = userAvailability
 
-  const startHours = time_start_in_minutes / 60
-  const endHours = time_end_in_minutes / 60
+  const startHour = time_start_in_minutes / 60
+  const endHour = time_end_in_minutes / 60
 
-  const possibleTimes = Array.from({ length: endHours - startHours }).map(
+  const possibleTimes = Array.from({ length: endHour - startHour }).map(
     (_, index) => {
-      return startHours + index
+      return startHour + index
     },
   )
 
@@ -86,18 +98,28 @@ export async function GET(request: NextRequest, { params }: Params) {
     where: {
       user_id: user.id,
       date: {
-        gte: referenceDate.set('hour', startHours).toDate(),
-        lte: referenceDate.set('hour', endHours).toDate(),
+        gte: referenceDate
+          .set('hour', startHour)
+          .add(timezoneOffsetInHours, 'hours')
+          .toDate(),
+        lte: referenceDate
+          .set('hour', endHour)
+          .add(timezoneOffsetInHours, 'hours')
+          .toDate(),
       },
     },
   })
 
   const availabilityTimes = possibleTimes.filter((time) => {
     const isTimeBlocked = blockedTimes.some(
-      (blockedTime) => blockedTime.date.getHours() === time,
+      (blockedTime) =>
+        blockedTime.date.getUTCHours() - timezoneOffsetInHours === time,
     )
 
-    const isTimeInPast = referenceDate.set('hour', time).isBefore()
+    const isTimeInPast = referenceDate
+      .set('hour', time)
+      .subtract(referenceDateTimeZoneOffsetInHours, 'hours')
+      .isBefore(dayjs().utc().subtract(timezoneOffsetInHours, 'hours'))
 
     return !isTimeBlocked && !isTimeInPast
   })
